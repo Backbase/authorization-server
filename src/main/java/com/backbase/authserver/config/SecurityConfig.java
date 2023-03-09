@@ -1,6 +1,8 @@
 package com.backbase.authserver.config;
 
 
+import com.backbase.authserver.authentication.AiConsentAuthenticationConfigurer;
+import com.backbase.authserver.authentication.AiConsentAuthenticationEntryPoint;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -34,14 +36,14 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 @Configuration
 public class SecurityConfig {
 
     @Bean
     @Order(1)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
+    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http,
+        AiConsentAuthenticationEntryPoint entryPoint)
         throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
@@ -49,10 +51,7 @@ public class SecurityConfig {
         http
             // Redirect to the login page when not authenticated from the
             // authorization endpoint
-            .exceptionHandling((exceptions) -> exceptions
-                .authenticationEntryPoint(
-                    new LoginUrlAuthenticationEntryPoint("/login"))
-            )
+            .exceptionHandling((exceptions) -> exceptions.authenticationEntryPoint(entryPoint))
             // Accept access tokens for User Info and/or Client Registration
             .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
         return http.build();
@@ -60,16 +59,16 @@ public class SecurityConfig {
 
     @Bean
     @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http,
+        AiConsentAuthenticationConfigurer configurer)
         throws Exception {
         http
             .authorizeHttpRequests((authorize) -> authorize
-                .antMatchers("/favicon.ico", ".well-known/openid-configuration").permitAll()
+                .antMatchers("/favicon.ico", "/.well-known/openid-configuration").permitAll()
                 .anyRequest().authenticated()
             )
-            // Form login handles the redirect to the login page from the
-            // authorization server filter chain
-            .formLogin(Customizer.withDefaults());
+            // Configuring the callback endpoint that handles the authenticated redirect from the consent authorization.
+            .apply(configurer);
 
         return http.build();
     }
@@ -77,8 +76,8 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails userDetails = User.withDefaultPasswordEncoder()
-            .username("user")
-            .password("password")
+            .username("sara")
+            .password("sara")
             .roles("USER")
             .build();
 

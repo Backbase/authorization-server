@@ -15,6 +15,10 @@
     <description>auth-server</description>
     <properties>
         <java.version>17</java.version>
+        <spring-security-oauth2.version>0.4.1</spring-security-oauth2.version>
+        <swagger-annotations.version>2.2.8</swagger-annotations.version>
+        <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
+        <jsr305.version>3.0.2</jsr305.version>
     </properties>
     <dependencies>
         <dependency>
@@ -28,7 +32,27 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-oauth2-authorization-server</artifactId>
-            <version>0.4.1</version>
+            <version>${spring-security-oauth2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>${swagger-annotations.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>${jackson-databind-nullable.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>${jsr305.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -52,6 +76,34 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.backbase.oss</groupId>
+                <artifactId>boat-maven-plugin</artifactId>
+                <version>0.17.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-open-banking-accounts</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <generatorName>java</generatorName>
+                            <library>native</library>
+                            <skipValidateSpec>true</skipValidateSpec>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <inputSpec>https://static.developer.mastercard.com/content/open-banking-connect/swagger/api-accounts-service.yaml</inputSpec>
+                            <apiPackage>com.mastercard.openbanking.accounts.api</apiPackage>
+                            <modelPackage>com.mastercard.openbanking.accounts.models</modelPackage>
+                            <configOptions>
+                                <java8>true</java8>
+                                <dateLibrary>java8</dateLibrary>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
