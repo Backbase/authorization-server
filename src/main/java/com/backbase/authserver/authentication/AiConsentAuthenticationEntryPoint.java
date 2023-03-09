@@ -40,14 +40,13 @@ public class AiConsentAuthenticationEntryPoint implements AuthenticationEntryPoi
                 .validUntilDateTime(OffsetDateTime.now().plusDays(1))
                 .requestInfo(new PostAccountsConsentsParamsBodyRequestInfo()
                     .xRequestId(UUID.randomUUID().toString())
-                    .tppRedirectURI("http://host.docker.internal:8080/callback")
                     .isLivePsuRequest(true)
                     .psuIPAddress("192.168.0.1")
                     .psuAgent("PostmanRuntime/7.20.1")
                     .aspspId("b806ae68-a45b-49d6-b25a-69fdb81dede6")
-                    .psuTppCustomerId("b806ae68-a45b-49d6-b25a-69fdb81dede6")
                     .merchant(new Merchant().id("MerchantId").name("MerchantName"))
                     .credentials(Map.of("iban", "DE357543513"))
+                    .tppRedirectURI("http://host.docker.internal:8080/callback")
                 );
             PostAccountsConsentsOKBody consent = aiConsentsApi.getConsent(consentRequest);
             redirectStrategy.sendRedirect(request, response, consent.getLinks().getScaRedirect());

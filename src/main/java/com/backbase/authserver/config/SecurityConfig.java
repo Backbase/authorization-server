@@ -3,6 +3,7 @@ package com.backbase.authserver.config;
 
 import com.backbase.authserver.authentication.AiConsentAuthenticationConfigurer;
 import com.backbase.authserver.authentication.AiConsentAuthenticationEntryPoint;
+import com.backbase.authserver.authentication.AiConsentAuthenticationProvider;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -20,9 +21,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
@@ -34,7 +32,6 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -60,28 +57,18 @@ public class SecurityConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http,
-        AiConsentAuthenticationConfigurer configurer)
+        AiConsentAuthenticationConfigurer configurer, AiConsentAuthenticationProvider provider)
         throws Exception {
         http
             .authorizeHttpRequests((authorize) -> authorize
                 .antMatchers("/favicon.ico", "/.well-known/openid-configuration").permitAll()
                 .anyRequest().authenticated()
             )
+            .authenticationProvider(provider)
             // Configuring the callback endpoint that handles the authenticated redirect from the consent authorization.
             .apply(configurer);
 
         return http.build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails userDetails = User.withDefaultPasswordEncoder()
-            .username("sara")
-            .password("sara")
-            .roles("USER")
-            .build();
-
-        return new InMemoryUserDetailsManager(userDetails);
     }
 
     @Bean

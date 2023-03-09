@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Slf4j
 @Configuration
-public class AiConsentsApiConfig {
+public class AiConsentApiConfig {
 
     @Bean
     public ApiClient apiClient(@Value("${mastercard.accounts.api.base-uri}") String baseUri) {
