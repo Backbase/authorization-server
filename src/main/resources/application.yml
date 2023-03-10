@@ -10,3 +10,21 @@ logging:
     com.backbase.authorization: DEBUG
     org.springframework.security: TRACE
 
+mastercard:
+  authorization:
+    oidc:
+      clients:
+        mastercard-client:
+          client-secret: "{noop}secret"
+          client-authentication-methods:
+            - client_secret_basic
+          authorization-grant-types:
+            - implicit
+            - refresh_token
+            - authorization_code
+            - client_credentials
+          redirect-uris:
+            - http://host.docker.internal:8180/auth/realms/mastercard/broker/mastercard/endpoint
+          scopes:
+            - openid
+            - profile

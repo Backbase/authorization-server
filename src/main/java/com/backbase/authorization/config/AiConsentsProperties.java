@@ -15,7 +15,7 @@ public class AiConsentsProperties {
 
     String baseUri = "https://developer.mastercard.com/apigwproxy/openbanking/connect/api";
 
-    private Map<String, Aspsp> aspsps = Map.of("b806ae68-a45b-49d6-b25a-69fdb81dede6", new Aspsp());
+    private Map<String, Aspsp> aspsps = Map.of("420e5cff-0e2a-4156-991a-f6eeef0478cf", new Aspsp());
 
     @Data
     public static class Aspsp {
