@@ -6,22 +6,29 @@ import org.springframework.security.core.GrantedAuthority;
 
 public class AiConsentAuthentication extends AbstractAuthenticationToken {
 
-    private final String username;
+    private final String aspspId;
     private final String credentials;
+    private final String username;
 
-    public AiConsentAuthentication(String authorization) {
+    public AiConsentAuthentication(String aspspId, String authorizationQuery) {
         super(null);
         setAuthenticated(false);
-        this.credentials = authorization;
+        this.aspspId = aspspId;
+        this.credentials = authorizationQuery;
         this.username = null;
     }
 
-    public AiConsentAuthentication(String username, String consentId,
+    public AiConsentAuthentication(String aspspId, String consentId, String username,
         Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         setAuthenticated(true);
+        this.aspspId = aspspId;
         this.credentials = consentId;
         this.username = username;
+    }
+
+    public String getAspspId() {
+        return this.aspspId;
     }
 
     @Override

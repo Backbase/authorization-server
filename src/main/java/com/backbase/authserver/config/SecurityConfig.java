@@ -51,8 +51,7 @@ public class SecurityConfig {
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
             .oidc(Customizer.withDefaults()); // Enable OpenID Connect 1.0
         http
-            // Redirect to the login page when not authenticated from the
-            // authorization endpoint
+            // Redirect to the login page when not authenticated from the authorization endpoint
             .exceptionHandling((exceptions) -> exceptions.authenticationEntryPoint(entryPoint))
             // Accept access tokens for User Info and/or Client Registration
             .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
@@ -78,6 +77,7 @@ public class SecurityConfig {
 
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
+        // TODO: Move this to configuration file.
         RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
             .clientId("mastercard-client")
             .clientSecret("{noop}secret")
@@ -85,11 +85,9 @@ public class SecurityConfig {
             .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
             .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
             .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-            .redirectUri("http://host.docker.internal:8180/auth/realms/mastercard/broker/oidc/endpoint")
+            .redirectUri("http://keycloak.local:8180/auth/realms/mastercard/broker/oidc/endpoint")
             .scope(OidcScopes.OPENID)
             .scope(OidcScopes.PROFILE)
-            .scope("message.read")
-            .scope("message.write")
             .clientSettings(ClientSettings.builder().requireAuthorizationConsent(false).build())
             .build();
 
