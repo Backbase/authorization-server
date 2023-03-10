@@ -6,17 +6,19 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.7.9</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
     <groupId>com.backbase</groupId>
     <artifactId>authorization-server</artifactId>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
     <properties>
         <java.version>17</java.version>
         <spring-security-oauth2.version>0.4.1</spring-security-oauth2.version>
         <swagger-annotations.version>2.2.8</swagger-annotations.version>
         <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
         <jsr305.version>3.0.2</jsr305.version>
+        <jib.version>3.3.1</jib.version>
+        <docker.registry.url>docker.io/library</docker.registry.url>
     </properties>
     <dependencies>
         <dependency>
@@ -106,6 +108,28 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>${jib.version}</version>
+                <configuration>
+                    <from>
+                        <platforms>
+                            <platform>
+                                <architecture>amd64</architecture>
+                                <os>linux</os>
+                            </platform>
+                            <platform>
+                                <architecture>arm64</architecture>
+                                <os>linux</os>
+                            </platform>
+                        </platforms>
+                    </from>
+                    <to>
+                        <image>${docker.registry.url}/${project.artifactId}:${project.version}</image>
+                    </to>
+                </configuration>
             </plugin>
         </plugins>
     </build>
