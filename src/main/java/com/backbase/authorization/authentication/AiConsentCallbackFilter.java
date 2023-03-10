@@ -1,9 +1,9 @@
-package com.backbase.authserver.authentication;
+package com.backbase.authorization.authentication;
 
-import static com.backbase.authserver.authentication.AiConsentAuthenticationEntryPoint.ASPSP_ID_PARAM;
-
+import com.backbase.authorization.config.AiConsentsProperties;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -11,19 +11,23 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-public class AiConsentAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+@Slf4j
+public class AiConsentCallbackFilter extends AbstractAuthenticationProcessingFilter {
 
-    protected AiConsentAuthenticationFilter(String defaultFilterProcessesUrl) {
-        super(defaultFilterProcessesUrl);
+    protected AiConsentCallbackFilter(String callbackUrl) {
+        super(callbackUrl);
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
         throws AuthenticationException {
+        log.debug("Processing AI consent callback request.");
         UriComponents uri = UriComponentsBuilder.fromHttpRequest(new ServletServerHttpRequest(request)).build();
-        String aspspId = uri.getQueryParams().getFirst(ASPSP_ID_PARAM);
+        String aspspId = uri.getQueryParams().getFirst(AiConsentsProperties.ASPSP_ID_KEY);
         String authorizationQuery = uri.getQuery();
-        AiConsentAuthentication consentAuthentication = new AiConsentAuthentication(aspspId, authorizationQuery);
+        AiConsentAuthenticationToken consentAuthentication = new AiConsentAuthenticationToken(aspspId,
+            authorizationQuery);
+        consentAuthentication.setDetails(this.authenticationDetailsSource.buildDetails(request));
         return this.getAuthenticationManager().authenticate(consentAuthentication);
     }
 }

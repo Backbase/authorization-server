@@ -1,9 +1,10 @@
-package com.backbase.authserver.config;
+package com.backbase.authorization.config;
 
 
-import com.backbase.authserver.authentication.AiConsentAuthenticationConfigurer;
-import com.backbase.authserver.authentication.AiConsentAuthenticationEntryPoint;
-import com.backbase.authserver.authentication.AiConsentAuthenticationProvider;
+import com.backbase.authorization.authentication.AiConsentAuthenticationConfigurer;
+import com.backbase.authorization.authentication.AiConsentAuthenticationProvider;
+import com.backbase.authorization.authentication.AiConsentAuthenticationToken;
+import com.backbase.authorization.authentication.AiConsentRedirectEntryPoint;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -15,6 +16,7 @@ import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
 import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -37,15 +39,18 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 
+@Slf4j
 @Configuration
-public class SecurityConfig {
+public class SecurityConfiguration {
 
     @Bean
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http,
-        AiConsentAuthenticationEntryPoint entryPoint)
+        AiConsentRedirectEntryPoint entryPoint)
         throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
@@ -53,7 +58,7 @@ public class SecurityConfig {
         http
             // Redirect to the login page when not authenticated from the authorization endpoint
             .exceptionHandling((exceptions) -> exceptions.authenticationEntryPoint(entryPoint))
-            // Accept access tokens for User Info and/or Client Registration
+            // Accept access tokens for AiConsentUser Info and/or Client Registration
             .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
         return http.build();
     }
@@ -82,8 +87,9 @@ public class SecurityConfig {
             .clientId("mastercard-client")
             .clientSecret("{noop}secret")
             .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+            .authorizationGrantType(AuthorizationGrantType.IMPLICIT)
             .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
             .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
             .redirectUri("http://keycloak.local:8180/auth/realms/mastercard/broker/oidc/endpoint")
             .scope(OidcScopes.OPENID)
@@ -123,6 +129,18 @@ public class SecurityConfig {
     @Bean
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
         return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
+    }
+
+    @Bean
+    public OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
+        return context -> {
+            AiConsentAuthenticationToken consentToken = context.getPrincipal();
+            log.debug("Including extra claims from {}", consentToken);
+            context.getClaims().claims(c -> {
+                c.put(AiConsentsProperties.ASPSP_ID_KEY, consentToken.getAspspId());
+                c.put(AiConsentsProperties.CONSENT_ID_KEY, consentToken.getCredentials());
+            });
+        };
     }
 
     @Bean

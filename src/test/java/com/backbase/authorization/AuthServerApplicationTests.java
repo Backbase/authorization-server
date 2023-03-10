@@ -1,4 +1,4 @@
-package com.backbase.authserver;
+package com.backbase.authorization;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

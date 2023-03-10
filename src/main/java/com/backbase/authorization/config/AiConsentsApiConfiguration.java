@@ -1,4 +1,4 @@
-package com.backbase.authserver.config;
+package com.backbase.authorization.config;
 
 import com.mastercard.openbanking.accounts.ApiClient;
 import com.mastercard.openbanking.accounts.api.AiConsentsApi;
@@ -10,11 +10,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Slf4j
 @Configuration
-@EnableConfigurationProperties(AiConsentProperties.class)
-public class AiConsentApiConfig {
+@EnableConfigurationProperties(AiConsentsProperties.class)
+public class AiConsentsApiConfiguration {
 
     @Bean
-    public ApiClient apiClient(AiConsentProperties properties) {
+    public ApiClient apiClient(AiConsentsProperties properties) {
         log.debug("Configuring api with Base Uri: {}", properties.getBaseUri());
         ApiClient apiClient = new ApiClient();
         apiClient.updateBaseUri(properties.getBaseUri());

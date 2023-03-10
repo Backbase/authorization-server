@@ -1,5 +1,7 @@
-package com.backbase.authserver.authentication;
+package com.backbase.authorization.authentication;
 
+import com.backbase.authorization.model.AiConsentUser;
+import com.backbase.authorization.repository.AiConsentUsersRepository;
 import com.mastercard.openbanking.accounts.ApiException;
 import com.mastercard.openbanking.accounts.api.AiConsentsAuthorizationsApi;
 import com.mastercard.openbanking.accounts.models.PostAccountsConsentsAuthOKBody;
@@ -7,31 +9,35 @@ import com.mastercard.openbanking.accounts.models.PostAccountsConsentsAuthParams
 import com.mastercard.openbanking.accounts.models.PostAccountsConsentsAuthParamsBodyRequestInfo;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AiConsentAuthenticationProvider implements AuthenticationProvider {
 
     private final AiConsentsAuthorizationsApi aiConsentsAuthorizationsApi;
+    private final AiConsentUsersRepository usersRepository;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        log.debug("Exchanging the authorization for access consent");
         try {
-            AiConsentAuthentication consentAuthentication = (AiConsentAuthentication) authentication;
+            AiConsentAuthenticationToken consentToken = (AiConsentAuthenticationToken) authentication;
             PostAccountsConsentsAuthParamsBody request = new PostAccountsConsentsAuthParamsBody()
-                .authorization(consentAuthentication.getCredentials())
+                .authorization(consentToken.getCredentials())
                 .requestInfo(new PostAccountsConsentsAuthParamsBodyRequestInfo()
                     .xRequestId(UUID.randomUUID().toString())
-                    .aspspId(consentAuthentication.getAspspId()));
-            PostAccountsConsentsAuthOKBody authorizations = aiConsentsAuthorizationsApi.getAuthorizations(request);
-            return new AiConsentAuthentication(consentAuthentication.getAspspId(), authorizations.getConsentId(),
-                "sara", AuthorityUtils.createAuthorityList("USER")); // TODO: Create strategy to dynamically obtain the username and authorities.
+                    .aspspId(consentToken.getAspspId()));
+            PostAccountsConsentsAuthOKBody authorization = aiConsentsAuthorizationsApi.getAuthorizations(request);
+            AiConsentUser user = usersRepository.findAspspUserByConsentId(
+                consentToken.getAspspId(), authorization.getConsentId());
+            return new AiConsentAuthenticationToken(consentToken.getAspspId(), authorization.getConsentId(), user);
         } catch (ApiException e) {
             throw new BadCredentialsException(e.getMessage(), e);
         }
@@ -39,6 +45,6 @@ public class AiConsentAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return authentication.isAssignableFrom(AiConsentAuthentication.class);
+        return authentication.isAssignableFrom(AiConsentAuthenticationToken.class);
     }
 }
