@@ -40,6 +40,7 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Slf4j
 @Configuration
@@ -53,7 +54,9 @@ public class SecurityConfiguration {
         throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-            .oidc(Customizer.withDefaults()); // Enable OpenID Connect 1.0
+            .oidc(Customizer.withDefaults()) // Enable OpenID Connect 1.0
+            .and()
+            .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()));
         http
             // Redirect to the login page when not authenticated from the authorization endpoint
             .exceptionHandling((exceptions) -> exceptions.authenticationEntryPoint(entryPoint))
