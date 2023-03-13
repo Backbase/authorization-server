@@ -1,8 +1,8 @@
-package com.backbase.authorization.ai.repository;
+package com.backbase.authorization.ais.repository;
 
-import com.backbase.authorization.ai.config.AiConsentsApiProperties;
-import com.backbase.authorization.ai.config.AiConsentsApiProperties.Aspsp;
-import com.backbase.authorization.ai.model.AiConsentUser;
+import com.backbase.authorization.ais.config.AiConsentsProperties;
+import com.backbase.authorization.ais.config.AiConsentsProperties.Aspsp;
+import com.backbase.authorization.ais.model.AiConsentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AiConsentUsersRepository {
 
-    private final AiConsentsApiProperties properties;
+    private final AiConsentsProperties properties;
 
     public AiConsentUser findAspspUserByConsentId(String aspspId, String consentId) {
         Aspsp aspsp = properties.getAspsps().stream().filter(a -> aspspId.equals(a.getId())).findFirst()

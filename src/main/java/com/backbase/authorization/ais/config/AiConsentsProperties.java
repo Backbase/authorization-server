@@ -1,6 +1,6 @@
-package com.backbase.authorization.ai.config;
+package com.backbase.authorization.ais.config;
 
-import com.backbase.authorization.ai.model.AiConsentUser;
+import com.backbase.authorization.ais.model.AiConsentUser;
 import java.util.Optional;
 import java.util.Set;
 import javax.validation.constraints.NotEmpty;
@@ -11,16 +11,20 @@ import org.springframework.validation.annotation.Validated;
 
 @Data
 @Validated
-@ConfigurationProperties(prefix = "open-banking.account-information")
-public class AiConsentsApiProperties {
+@ConfigurationProperties(prefix = "mastercard.mcob.ais")
+public class AiConsentsProperties {
 
     public static final String ASPSP_ID_KEY = "aspspId";
     public static final String CONSENT_ID_KEY = "consentId";
 
-    private Optional<String> apiBaseUri = Optional.empty();
+    private Api api = new Api();
 
     @NotEmpty
     private Set<Aspsp> aspsps;
+
+    public Aspsp getDefaultAspsp() {
+        return aspsps.stream().findFirst().orElseThrow();
+    }
 
     @Data
     public static class Aspsp {
@@ -41,8 +45,19 @@ public class AiConsentsApiProperties {
         private AiConsentUser user;
     }
 
-    public Aspsp getDefaultAspsp() {
-        return aspsps.stream().findFirst().orElseThrow();
+    @Data
+    public static class Api {
+
+        Optional<String> baseUri = Optional.empty();
+        Proxy proxy = new Proxy();
+    }
+
+    @Data
+    public static class Proxy {
+
+        Boolean enabled = false;
+        String host;
+        Integer port;
     }
 
 }

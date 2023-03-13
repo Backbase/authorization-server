@@ -1,8 +1,12 @@
-package com.backbase.authorization.ai.config;
+package com.backbase.authorization.ais.config;
 
-import com.mastercard.openbanking.ai.ApiClient;
-import com.mastercard.openbanking.ai.api.AiConsentsApi;
-import com.mastercard.openbanking.ai.api.AiConsentsAuthorizationsApi;
+import com.backbase.authorization.ais.config.AiConsentsProperties.Proxy;
+import com.mastercard.mcob.ais.ApiClient;
+import com.mastercard.mcob.ais.api.AiConsentsApi;
+import com.mastercard.mcob.ais.api.AiConsentsAuthorizationsApi;
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
+import java.net.http.HttpClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
 import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
@@ -15,18 +19,18 @@ import org.springframework.context.annotation.Configuration;
 
 @Slf4j
 @Configuration
-@EnableConfigurationProperties(AiConsentsApiProperties.class)
+@EnableConfigurationProperties(AiConsentsProperties.class)
 public class AiConsentsApiConfiguration {
 
     @Bean
-    public ApiClient apiClient(AiConsentsApiProperties properties) {
+    public ApiClient apiClient(AiConsentsProperties properties) {
         ApiClient apiClient = new ApiClient();
-        properties.getApiBaseUri()
+        properties.getApi().getBaseUri()
             .ifPresent(uri -> {
                 log.debug("Configuring api with Base Uri: {}", uri);
                 apiClient.updateBaseUri(uri);
             });
-        return apiClient;
+        return configureProxy(apiClient, properties.getApi().getProxy());
     }
 
     @Bean
@@ -37,6 +41,16 @@ public class AiConsentsApiConfiguration {
     @Bean
     public AiConsentsAuthorizationsApi aiConsentsAuthorizationsApi(ApiClient apiClient) {
         return new AiConsentsAuthorizationsApi(apiClient);
+    }
+
+    private ApiClient configureProxy(ApiClient apiClient, Proxy proxy) {
+        if (proxy.getEnabled()) {
+            log.debug("Enabling proxy configuration: {}", proxy);
+            HttpClient.Builder builder = HttpClient.newBuilder();
+            builder.proxy(ProxySelector.of(new InetSocketAddress(proxy.getHost(), proxy.getPort())));
+            return apiClient.setHttpClientBuilder(builder);
+        }
+        return apiClient;
     }
 
     @Bean

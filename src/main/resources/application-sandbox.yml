@@ -13,15 +13,17 @@ management:
       exposure:
         include: '*'
 
-open-banking:
-  account-information:
-    api-base-uri: https://developer.mastercard.com/apigwproxy/openbanking/connect/api
-    aspsps:
-      - id: 420e5cff-0e2a-4156-991a-f6eeef0478cf
-        consents:
-          - user:
-              username: sara
-              roles: USER
+mastercard:
+  mcob:
+    ais:
+      api:
+        base-uri: https://developer.mastercard.com/apigwproxy/openbanking/connect/api
+      aspsps:
+        - id: 420e5cff-0e2a-4156-991a-f6eeef0478cf
+          consents:
+            - user:
+                username: sara
+                roles: USER
 
 security:
   authorization:

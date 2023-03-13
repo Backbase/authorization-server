@@ -1,12 +1,12 @@
-package com.backbase.authorization.ai.authentication;
+package com.backbase.authorization.ais.authentication;
 
-import com.backbase.authorization.ai.config.AiConsentsApiProperties;
-import com.mastercard.openbanking.ai.ApiException;
-import com.mastercard.openbanking.ai.api.AiConsentsApi;
-import com.mastercard.openbanking.ai.models.PostAccountsConsentsOKBody;
-import com.mastercard.openbanking.ai.models.PostAccountsConsentsParamsBody;
-import com.mastercard.openbanking.ai.models.PostAccountsConsentsParamsBody.PermissionsEnum;
-import com.mastercard.openbanking.ai.models.PostAccountsConsentsParamsBodyRequestInfo;
+import com.backbase.authorization.ais.config.AiConsentsProperties;
+import com.mastercard.mcob.ais.ApiException;
+import com.mastercard.mcob.ais.api.AiConsentsApi;
+import com.mastercard.mcob.ais.model.PostAccountsConsentsOKBody;
+import com.mastercard.mcob.ais.model.PostAccountsConsentsParamsBody;
+import com.mastercard.mcob.ais.model.PostAccountsConsentsParamsBody.PermissionsEnum;
+import com.mastercard.mcob.ais.model.PostAccountsConsentsParamsBodyRequestInfo;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -30,7 +30,7 @@ public class AiConsentRedirectEntryPoint implements AuthenticationEntryPoint {
 
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
     private final AiConsentsApi aiConsentsApi;
-    private final AiConsentsApiProperties properties;
+    private final AiConsentsProperties properties;
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
@@ -57,7 +57,7 @@ public class AiConsentRedirectEntryPoint implements AuthenticationEntryPoint {
         return UriComponentsBuilder.fromHttpRequest(new ServletServerHttpRequest(request))
             .replacePath(AiConsentAuthenticationConfigurer.CALLBACK_URL)
             .replaceQuery("")
-            .queryParam(AiConsentsApiProperties.ASPSP_ID_KEY, aspspId)
+            .queryParam(AiConsentsProperties.ASPSP_ID_KEY, aspspId)
             .build()
             .toUriString();
     }

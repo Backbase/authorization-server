@@ -1,9 +1,9 @@
 package com.backbase.authorization.security.config;
 
 
-import com.backbase.authorization.ai.authentication.AiConsentAuthenticationConfigurer;
-import com.backbase.authorization.ai.authentication.AiConsentAuthenticationProvider;
-import com.backbase.authorization.ai.authentication.AiConsentRedirectEntryPoint;
+import com.backbase.authorization.ais.authentication.AiConsentAuthenticationConfigurer;
+import com.backbase.authorization.ais.authentication.AiConsentAuthenticationProvider;
+import com.backbase.authorization.ais.authentication.AiConsentRedirectEntryPoint;
 import com.backbase.authorization.security.token.AttributesClaimsMapper;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
