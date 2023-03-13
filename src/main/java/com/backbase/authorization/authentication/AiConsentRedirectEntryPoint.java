@@ -3,12 +3,12 @@ package com.backbase.authorization.authentication;
 import static com.backbase.authorization.authentication.AiConsentAuthenticationConfigurer.CALLBACK_URL;
 
 import com.backbase.authorization.config.AiConsentsProperties;
-import com.mastercard.openbanking.accounts.ApiException;
-import com.mastercard.openbanking.accounts.api.AiConsentsApi;
-import com.mastercard.openbanking.accounts.models.PostAccountsConsentsOKBody;
-import com.mastercard.openbanking.accounts.models.PostAccountsConsentsParamsBody;
-import com.mastercard.openbanking.accounts.models.PostAccountsConsentsParamsBody.PermissionsEnum;
-import com.mastercard.openbanking.accounts.models.PostAccountsConsentsParamsBodyRequestInfo;
+import com.mastercard.openbanking.ai.ApiException;
+import com.mastercard.openbanking.ai.api.AiConsentsApi;
+import com.mastercard.openbanking.ai.models.PostAccountsConsentsOKBody;
+import com.mastercard.openbanking.ai.models.PostAccountsConsentsParamsBody;
+import com.mastercard.openbanking.ai.models.PostAccountsConsentsParamsBody.PermissionsEnum;
+import com.mastercard.openbanking.ai.models.PostAccountsConsentsParamsBodyRequestInfo;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.List;

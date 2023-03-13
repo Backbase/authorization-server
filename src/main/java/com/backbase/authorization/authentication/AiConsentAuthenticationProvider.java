@@ -2,11 +2,11 @@ package com.backbase.authorization.authentication;
 
 import com.backbase.authorization.model.AiConsentUser;
 import com.backbase.authorization.repository.AiConsentUsersRepository;
-import com.mastercard.openbanking.accounts.ApiException;
-import com.mastercard.openbanking.accounts.api.AiConsentsAuthorizationsApi;
-import com.mastercard.openbanking.accounts.models.PostAccountsConsentsAuthOKBody;
-import com.mastercard.openbanking.accounts.models.PostAccountsConsentsAuthParamsBody;
-import com.mastercard.openbanking.accounts.models.PostAccountsConsentsAuthParamsBodyRequestInfo;
+import com.mastercard.openbanking.ai.ApiException;
+import com.mastercard.openbanking.ai.api.AiConsentsAuthorizationsApi;
+import com.mastercard.openbanking.ai.models.PostAccountsConsentsAuthOKBody;
+import com.mastercard.openbanking.ai.models.PostAccountsConsentsAuthParamsBody;
+import com.mastercard.openbanking.ai.models.PostAccountsConsentsAuthParamsBodyRequestInfo;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

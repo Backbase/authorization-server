@@ -3,8 +3,8 @@ package com.backbase.authorization.config;
 
 import com.backbase.authorization.authentication.AiConsentAuthenticationConfigurer;
 import com.backbase.authorization.authentication.AiConsentAuthenticationProvider;
-import com.backbase.authorization.authentication.AiConsentAuthenticationToken;
 import com.backbase.authorization.authentication.AiConsentRedirectEntryPoint;
+import com.backbase.authorization.oidc.AttributeClaimsMapper;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -27,7 +27,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -37,8 +36,6 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
-import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
-import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -50,11 +47,12 @@ public class SecurityConfiguration {
     @Bean
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http,
-        AiConsentRedirectEntryPoint entryPoint)
+        AiConsentRedirectEntryPoint entryPoint, AttributeClaimsMapper attributeClaimsMapper)
         throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-            .oidc(Customizer.withDefaults()) // Enable OpenID Connect 1.0
+            .oidc((oidc) -> oidc.userInfoEndpoint(
+                (configurer) -> configurer.userInfoMapper(attributeClaimsMapper))) // Enable OpenID Connect 1.0
             .and()
             .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()));
         http
@@ -72,7 +70,7 @@ public class SecurityConfiguration {
         throws Exception {
         http
             .authorizeHttpRequests((authorize) -> authorize
-                .antMatchers("/actuator/**", "/favicon.ico", "/.well-known/openid-configuration").permitAll()
+                .antMatchers("/actuator/**", "/favicon.ico").permitAll()
                 .anyRequest().authenticated()
             )
             .authenticationProvider(provider)
@@ -126,18 +124,6 @@ public class SecurityConfiguration {
     @Bean
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
         return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
-    }
-
-    @Bean
-    public OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
-        return context -> {
-            AiConsentAuthenticationToken consentToken = context.getPrincipal();
-            log.debug("Including extra claims from {}", consentToken);
-            context.getClaims().claims(c -> {
-                c.put(AiConsentsProperties.ASPSP_ID_KEY, consentToken.getAspspId());
-                c.put(AiConsentsProperties.CONSENT_ID_KEY, consentToken.getCredentials());
-            });
-        };
     }
 
     @Bean

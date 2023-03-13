@@ -1,43 +1,50 @@
 package com.backbase.authorization.authentication;
 
+import com.backbase.authorization.config.AiConsentsProperties;
 import com.backbase.authorization.model.AiConsentUser;
+import com.backbase.authorization.oidc.AttributeAuthenticationToken;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
 
-public class AiConsentAuthenticationToken extends AbstractAuthenticationToken {
+public class AiConsentAuthenticationToken extends AbstractAuthenticationToken implements AttributeAuthenticationToken {
 
-    private final String aspspId;
-    private final String credentials;
-    private final String username;
+    private final Map<String, Object> attributes = new HashMap<>();
 
     public AiConsentAuthenticationToken(String aspspId, String authorizationQuery) {
         super(null);
         setAuthenticated(false);
-        this.aspspId = aspspId;
-        this.credentials = authorizationQuery;
-        this.username = null;
+        this.attributes.put(AiConsentsProperties.ASPSP_ID_KEY, aspspId);
+        this.attributes.put(AiConsentsProperties.CONSENT_ID_KEY, authorizationQuery);
     }
 
     public AiConsentAuthenticationToken(String aspspId, String consentId, AiConsentUser user) {
         super(user.getRoles().stream().map(SimpleGrantedAuthority::new).toList());
         setAuthenticated(true);
-        this.aspspId = aspspId;
-        this.credentials = consentId;
-        this.username = user.getUsername();
+        this.attributes.put(AiConsentsProperties.ASPSP_ID_KEY, aspspId);
+        this.attributes.put(AiConsentsProperties.CONSENT_ID_KEY, consentId);
+        this.attributes.put(StandardClaimNames.PREFERRED_USERNAME, user.getUsername());
     }
 
     public String getAspspId() {
-        return this.aspspId;
+        return (String) this.attributes.get(AiConsentsProperties.ASPSP_ID_KEY);
     }
 
     @Override
     public String getCredentials() {
-        return this.credentials;
+        return (String) this.attributes.get(AiConsentsProperties.CONSENT_ID_KEY);
     }
 
     @Override
-    public Object getPrincipal() {
-        return this.username;
+    public String getPrincipal() {
+        return (String) this.attributes.getOrDefault(StandardClaimNames.PREFERRED_USERNAME, null);
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return Map.copyOf(attributes);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.backbase.authorization.config;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import lombok.Data;
@@ -21,6 +22,18 @@ public class SecurityProperties {
         private Set<AuthorizationGrantType> authorizationGrantTypes;
         private Set<String> redirectUris;
         private Set<String> scopes;
+        private Set<ClaimMapper> claimMappers = new HashSet<>();
+
+    }
+
+    @Data
+    public static class ClaimMapper {
+
+        private String attributeName;
+        private Boolean toUserInfo = true;
+        private Boolean toAccessToken = false;
+        private Boolean toIdToken = false;
+
     }
 
 }

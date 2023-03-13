@@ -1,8 +1,8 @@
 package com.backbase.authorization.config;
 
-import com.mastercard.openbanking.accounts.ApiClient;
-import com.mastercard.openbanking.accounts.api.AiConsentsApi;
-import com.mastercard.openbanking.accounts.api.AiConsentsAuthorizationsApi;
+import com.mastercard.openbanking.ai.ApiClient;
+import com.mastercard.openbanking.ai.api.AiConsentsApi;
+import com.mastercard.openbanking.ai.api.AiConsentsAuthorizationsApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
