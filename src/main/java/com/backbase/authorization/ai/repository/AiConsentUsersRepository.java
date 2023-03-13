@@ -1,8 +1,8 @@
-package com.backbase.authorization.repository;
+package com.backbase.authorization.ai.repository;
 
-import com.backbase.authorization.config.AiConsentsApiProperties;
-import com.backbase.authorization.config.AiConsentsApiProperties.Aspsp;
-import com.backbase.authorization.model.AiConsentUser;
+import com.backbase.authorization.ai.config.AiConsentsApiProperties;
+import com.backbase.authorization.ai.config.AiConsentsApiProperties.Aspsp;
+import com.backbase.authorization.ai.model.AiConsentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

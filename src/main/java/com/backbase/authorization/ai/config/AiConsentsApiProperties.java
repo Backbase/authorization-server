@@ -1,6 +1,6 @@
-package com.backbase.authorization.config;
+package com.backbase.authorization.ai.config;
 
-import com.backbase.authorization.model.AiConsentUser;
+import com.backbase.authorization.ai.model.AiConsentUser;
 import java.util.Optional;
 import java.util.Set;
 import javax.validation.constraints.NotEmpty;

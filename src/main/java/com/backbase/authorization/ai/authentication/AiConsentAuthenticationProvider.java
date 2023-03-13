@@ -1,7 +1,7 @@
-package com.backbase.authorization.authentication;
+package com.backbase.authorization.ai.authentication;
 
-import com.backbase.authorization.model.AiConsentUser;
-import com.backbase.authorization.repository.AiConsentUsersRepository;
+import com.backbase.authorization.ai.model.AiConsentUser;
+import com.backbase.authorization.ai.repository.AiConsentUsersRepository;
 import com.mastercard.openbanking.ai.ApiException;
 import com.mastercard.openbanking.ai.api.AiConsentsAuthorizationsApi;
 import com.mastercard.openbanking.ai.models.PostAccountsConsentsAuthOKBody;

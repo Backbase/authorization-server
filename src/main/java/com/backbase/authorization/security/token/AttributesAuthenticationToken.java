@@ -1,4 +1,4 @@
-package com.backbase.authorization.oidc;
+package com.backbase.authorization.security.token;
 
 
 import java.util.Map;

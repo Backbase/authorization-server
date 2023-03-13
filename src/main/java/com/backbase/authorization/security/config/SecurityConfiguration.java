@@ -1,10 +1,10 @@
-package com.backbase.authorization.config;
+package com.backbase.authorization.security.config;
 
 
-import com.backbase.authorization.authentication.AiConsentAuthenticationConfigurer;
-import com.backbase.authorization.authentication.AiConsentAuthenticationProvider;
-import com.backbase.authorization.authentication.AiConsentRedirectEntryPoint;
-import com.backbase.authorization.oidc.AttributesClaimsMapper;
+import com.backbase.authorization.ai.authentication.AiConsentAuthenticationConfigurer;
+import com.backbase.authorization.ai.authentication.AiConsentAuthenticationProvider;
+import com.backbase.authorization.ai.authentication.AiConsentRedirectEntryPoint;
+import com.backbase.authorization.security.token.AttributesClaimsMapper;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;

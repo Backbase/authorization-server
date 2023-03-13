@@ -1,6 +1,6 @@
-package com.backbase.authorization.authentication;
+package com.backbase.authorization.ai.authentication;
 
-import com.backbase.authorization.config.AiConsentsApiProperties;
+import com.backbase.authorization.ai.config.AiConsentsApiProperties;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;

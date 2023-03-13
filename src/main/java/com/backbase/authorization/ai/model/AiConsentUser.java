@@ -1,4 +1,4 @@
-package com.backbase.authorization.model;
+package com.backbase.authorization.ai.model;
 
 import java.util.Collections;
 import java.util.List;

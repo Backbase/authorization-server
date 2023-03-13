@@ -1,4 +1,4 @@
-package com.backbase.authorization.config;
+package com.backbase.authorization.ai.config;
 
 import com.mastercard.openbanking.ai.ApiClient;
 import com.mastercard.openbanking.ai.api.AiConsentsApi;

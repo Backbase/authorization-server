@@ -1,7 +1,7 @@
-package com.backbase.authorization.oidc;
+package com.backbase.authorization.security.token;
 
-import com.backbase.authorization.config.SecurityProperties;
-import com.backbase.authorization.config.SecurityProperties.ClaimMapper;
+import com.backbase.authorization.security.config.SecurityProperties;
+import com.backbase.authorization.security.config.SecurityProperties.ClaimMapper;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;

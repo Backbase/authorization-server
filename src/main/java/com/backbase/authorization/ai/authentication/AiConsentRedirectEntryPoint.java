@@ -1,8 +1,6 @@
-package com.backbase.authorization.authentication;
+package com.backbase.authorization.ai.authentication;
 
-import static com.backbase.authorization.authentication.AiConsentAuthenticationConfigurer.CALLBACK_URL;
-
-import com.backbase.authorization.config.AiConsentsApiProperties;
+import com.backbase.authorization.ai.config.AiConsentsApiProperties;
 import com.mastercard.openbanking.ai.ApiException;
 import com.mastercard.openbanking.ai.api.AiConsentsApi;
 import com.mastercard.openbanking.ai.models.PostAccountsConsentsOKBody;
@@ -57,7 +55,7 @@ public class AiConsentRedirectEntryPoint implements AuthenticationEntryPoint {
 
     private static String buildRedirectURI(HttpServletRequest request, String aspspId) {
         return UriComponentsBuilder.fromHttpRequest(new ServletServerHttpRequest(request))
-            .replacePath(CALLBACK_URL)
+            .replacePath(AiConsentAuthenticationConfigurer.CALLBACK_URL)
             .replaceQuery("")
             .queryParam(AiConsentsApiProperties.ASPSP_ID_KEY, aspspId)
             .build()

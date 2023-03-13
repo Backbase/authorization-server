@@ -1,4 +1,4 @@
-package com.backbase.authorization.config;
+package com.backbase.authorization.security.config;
 
 import java.util.HashSet;
 import java.util.Map;
