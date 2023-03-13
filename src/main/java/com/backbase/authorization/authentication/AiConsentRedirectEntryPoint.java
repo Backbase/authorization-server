@@ -2,7 +2,7 @@ package com.backbase.authorization.authentication;
 
 import static com.backbase.authorization.authentication.AiConsentAuthenticationConfigurer.CALLBACK_URL;
 
-import com.backbase.authorization.config.AiConsentsProperties;
+import com.backbase.authorization.config.AiConsentsApiProperties;
 import com.mastercard.openbanking.ai.ApiException;
 import com.mastercard.openbanking.ai.api.AiConsentsApi;
 import com.mastercard.openbanking.ai.models.PostAccountsConsentsOKBody;
@@ -32,14 +32,14 @@ public class AiConsentRedirectEntryPoint implements AuthenticationEntryPoint {
 
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
     private final AiConsentsApi aiConsentsApi;
-    private final AiConsentsProperties properties;
+    private final AiConsentsApiProperties properties;
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
         AuthenticationException authException) throws IOException {
         log.debug("Requesting AI consent initiation via redirect");
         try {
-            String defaultAspspId = properties.getDefaultAspspId(); // TODO: How can I get the aspspId id from the request?
+            String defaultAspspId = properties.getDefaultAspsp().getId(); // TODO: How can I get the aspspId id from the request?
             PostAccountsConsentsParamsBody consentRequest = new PostAccountsConsentsParamsBody()
                 .permissions(List.of(PermissionsEnum.ALLPSD2))
                 .validUntilDateTime(OffsetDateTime.now().plusDays(1))
@@ -59,7 +59,7 @@ public class AiConsentRedirectEntryPoint implements AuthenticationEntryPoint {
         return UriComponentsBuilder.fromHttpRequest(new ServletServerHttpRequest(request))
             .replacePath(CALLBACK_URL)
             .replaceQuery("")
-            .queryParam(AiConsentsProperties.ASPSP_ID_KEY, aspspId)
+            .queryParam(AiConsentsApiProperties.ASPSP_ID_KEY, aspspId)
             .build()
             .toUriString();
     }

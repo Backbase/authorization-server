@@ -3,21 +3,27 @@ package com.backbase.authorization.config;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.validation.constraints.NotEmpty;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.validation.annotation.Validated;
 
 @Data
-@ConfigurationProperties(prefix = "mastercard.authorization.oidc")
+@Validated
+@ConfigurationProperties(prefix = "security.authorization")
 public class SecurityProperties {
 
-    private Map<String, OidcClient> clients;
+    private String[] publicPaths = new String[0];
+
+    @NotEmpty
+    private Map<String, OidcClient> clientRegistration;
 
     @Data
     public static class OidcClient {
 
-        private String clientSecret;
+        private String secret;
         private Set<ClientAuthenticationMethod> clientAuthenticationMethods;
         private Set<AuthorizationGrantType> authorizationGrantTypes;
         private Set<String> redirectUris;

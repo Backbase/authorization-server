@@ -1,7 +1,7 @@
 package com.backbase.authorization.repository;
 
-import com.backbase.authorization.config.AiConsentsProperties;
-import com.backbase.authorization.config.AiConsentsProperties.Aspsp;
+import com.backbase.authorization.config.AiConsentsApiProperties;
+import com.backbase.authorization.config.AiConsentsApiProperties.Aspsp;
 import com.backbase.authorization.model.AiConsentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -10,14 +10,14 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AiConsentUsersRepository {
 
-    private final AiConsentsProperties properties;
+    private final AiConsentsApiProperties properties;
 
     public AiConsentUser findAspspUserByConsentId(String aspspId, String consentId) {
-        Aspsp aspsp = properties.getAspsps().get(aspspId);
-        if (aspsp.getConsents() != null && aspsp.getConsents().containsKey(consentId)) {
-            return aspsp.getConsents().get(consentId).getUser();
-        }
-        return aspsp.getDefaultUser();
+        Aspsp aspsp = properties.getAspsps().stream().filter(a -> aspspId.equals(a.getId())).findFirst()
+            .orElse(properties.getDefaultAspsp());
+
+        return aspsp.getConsents().stream().filter(c -> consentId.equals(c.getId())).findFirst()
+            .orElse(aspsp.getConsents().stream().findFirst().orElseThrow()).getUser();
     }
 
 }

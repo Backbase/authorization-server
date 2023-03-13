@@ -1,0 +1,27 @@
+logging:
+  level:
+    com.backbase.authorization: TRACE
+    org.springframework.security: TRACE
+
+open-banking:
+  account-information:
+    aspsps:
+      - id: 420e5cff-0e2a-4156-991a-f6eeef0478cf
+        consents:
+          - user:
+              username: test
+              roles: TEST
+
+security:
+  authorization:
+    client-registration:
+      test-client:
+        secret: "{noop}test-secret"
+        client-authentication-methods:
+          - client_secret_basic
+        authorization-grant-types:
+          - client_credentials
+        redirect-uris:
+          - "*"
+        scopes:
+          - openid

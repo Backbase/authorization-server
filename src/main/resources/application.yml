@@ -1,54 +1,8 @@
-management:
-  endpoints:
-    enabled-by-default: true
-    web:
-      exposure:
-        include: '*'
-
 logging:
   level:
-    com.backbase.authorization: DEBUG
-    org.springframework.security: TRACE
+    root: INFO
 
-mastercard:
+security:
   authorization:
-    oidc:
-      clients:
-        keycloak-broker-client:
-          client-secret: "{noop}secret"
-          client-authentication-methods:
-            - client_secret_basic
-          authorization-grant-types:
-            - client_credentials
-            - authorization_code
-            - refresh_token
-          redirect-uris:
-            - http://host.docker.internal:8180/auth/realms/mastercard/broker/mastercard/endpoint
-          scopes:
-            - openid
-            - profile
-          claim-mappers:
-            - attributeName: aspspId
-              toAccessToken: true
-            - attributeName: consentId
-              toAccessToken: true
-            - attributeName: preferred_username
-              toIdToken: true
-        web-client:
-          client-authentication-methods:
-            - none
-          authorization-grant-types:
-            - authorization_code
-            - refresh_token
-          redirect-uris:
-            - http://host.docker.internal:8080/en/select-context
-          scopes:
-            - openid
-            - profile
-          claim-mappers:
-            - attributeName: aspspId
-              toAccessToken: true
-            - attributeName: consentId
-              toAccessToken: true
-            - attributeName: preferred_username
-              toIdToken: true
+    public-paths:
+      - /favicon.ico

@@ -22,16 +22,16 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class AttributeClaimsMapper implements OAuth2TokenCustomizer<JwtEncodingContext>,
+public class AttributesClaimsMapper implements OAuth2TokenCustomizer<JwtEncodingContext>,
     Function<OidcUserInfoAuthenticationContext, OidcUserInfo> {
 
     private final SecurityProperties properties;
 
     @Override
     public void customize(JwtEncodingContext context) {
-        if (context.getPrincipal() instanceof AttributeAuthenticationToken authenticationToken) {
+        if (context.getPrincipal() instanceof AttributesAuthenticationToken authenticationToken) {
             Map<String, Object> attributes = authenticationToken.getAttributes();
-            properties.getClients().get(context.getRegisteredClient().getClientId()).getClaimMappers()
+            properties.getClientRegistration().get(context.getRegisteredClient().getClientId()).getClaimMappers()
                 .forEach(
                     mapper -> {
                         if (context.getTokenType().getValue().equals(OidcParameterNames.ID_TOKEN)
@@ -68,7 +68,7 @@ public class AttributeClaimsMapper implements OAuth2TokenCustomizer<JwtEncodingC
             Map<String, Object> jwtClaims = ((JwtAuthenticationToken) context.getAuthentication()
                 .getPrincipal())
                 .getTokenAttributes();
-            properties.getClients().get(request.getClientId()).getClaimMappers().stream()
+            properties.getClientRegistration().get(request.getClientId()).getClaimMappers().stream()
                 .filter(ClaimMapper::getToUserInfo)
                 .forEach(
                     mapper -> {

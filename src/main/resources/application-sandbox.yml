@@ -1,0 +1,68 @@
+logging:
+  level:
+    com.backbase.authorization: TRACE
+    org.springframework.security: TRACE
+
+server:
+  port: 8081
+
+management:
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: '*'
+
+open-banking:
+  account-information:
+    api-base-uri: https://developer.mastercard.com/apigwproxy/openbanking/connect/api
+    aspsps:
+      - id: 420e5cff-0e2a-4156-991a-f6eeef0478cf
+        consents:
+          - user:
+              username: sara
+              roles: USER
+
+security:
+  authorization:
+    public-paths:
+      - /actuator/**
+    client-registration:
+      keycloak-broker-client:
+        secret: "{noop}secret"
+        client-authentication-methods:
+          - client_secret_basic
+        authorization-grant-types:
+          - client_credentials
+          - authorization_code
+          - refresh_token
+        redirect-uris:
+          - http://host.docker.internal:8180/auth/realms/mastercard/broker/mastercard/endpoint
+        scopes:
+          - openid
+          - profile
+        claim-mappers:
+          - attributeName: aspspId
+            toAccessToken: true
+          - attributeName: consentId
+            toAccessToken: true
+          - attributeName: preferred_username
+            toIdToken: true
+      web-client:
+        client-authentication-methods:
+          - none
+        authorization-grant-types:
+          - authorization_code
+          - refresh_token
+        redirect-uris:
+          - http://host.docker.internal:8080/en/select-context
+        scopes:
+          - openid
+          - profile
+        claim-mappers:
+          - attributeName: aspspId
+            toAccessToken: true
+          - attributeName: consentId
+            toAccessToken: true
+          - attributeName: preferred_username
+            toIdToken: true

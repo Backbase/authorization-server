@@ -4,7 +4,7 @@ package com.backbase.authorization.config;
 import com.backbase.authorization.authentication.AiConsentAuthenticationConfigurer;
 import com.backbase.authorization.authentication.AiConsentAuthenticationProvider;
 import com.backbase.authorization.authentication.AiConsentRedirectEntryPoint;
-import com.backbase.authorization.oidc.AttributeClaimsMapper;
+import com.backbase.authorization.oidc.AttributesClaimsMapper;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -18,11 +18,6 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
-import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,12 +42,12 @@ public class SecurityConfiguration {
     @Bean
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http,
-        AiConsentRedirectEntryPoint entryPoint, AttributeClaimsMapper attributeClaimsMapper)
+        AiConsentRedirectEntryPoint entryPoint, AttributesClaimsMapper attributesClaimsMapper)
         throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
             .oidc((oidc) -> oidc.userInfoEndpoint(
-                (configurer) -> configurer.userInfoMapper(attributeClaimsMapper))) // Enable OpenID Connect 1.0
+                (configurer) -> configurer.userInfoMapper(attributesClaimsMapper))) // Enable OpenID Connect 1.0
             .and()
             .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()));
         http
@@ -65,12 +60,12 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http,
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, SecurityProperties properties,
         AiConsentAuthenticationConfigurer configurer, AiConsentAuthenticationProvider provider)
         throws Exception {
         http
             .authorizeHttpRequests((authorize) -> authorize
-                .antMatchers("/actuator/**", "/favicon.ico").permitAll()
+                .antMatchers(properties.getPublicPaths()).permitAll()
                 .anyRequest().authenticated()
             )
             .authenticationProvider(provider)
@@ -82,16 +77,17 @@ public class SecurityConfiguration {
 
     @Bean
     public RegisteredClientRepository registeredClientRepository(SecurityProperties properties) {
-        List<RegisteredClient> registeredClients = properties.getClients().entrySet().stream().map(e ->
+        List<RegisteredClient> registeredClients = properties.getClientRegistration().entrySet().stream().map(e ->
             RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId(e.getKey())
-                .clientSecret(e.getValue().getClientSecret())
+                .clientSecret(e.getValue().getSecret())
                 .clientAuthenticationMethods(m -> m.addAll(e.getValue().getClientAuthenticationMethods()))
                 .authorizationGrantTypes(t -> t.addAll(e.getValue().getAuthorizationGrantTypes()))
                 .redirectUris(r -> r.addAll(e.getValue().getRedirectUris()))
                 .scopes(s -> s.addAll(e.getValue().getScopes()))
                 .build()
         ).toList();
+        registeredClients.forEach(client -> log.debug("Registering OIDC client: {}", client));
         return new InMemoryRegisteredClientRepository(registeredClients);
     }
 
@@ -130,14 +126,6 @@ public class SecurityConfiguration {
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder()
             .build();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    @ConfigurationProperties(prefix = "management.trace.http.in-memory")
-    @ConditionalOnExpression("#{${management.endpoints.enabled-by-default:false} or ${management.trace.http.enabled:false}}")
-    public HttpTraceRepository httpTraceRepository() {
-        return new InMemoryHttpTraceRepository();
     }
 
 }
