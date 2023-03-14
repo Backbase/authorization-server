@@ -16,7 +16,9 @@ import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -31,6 +33,8 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
+import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -85,6 +89,8 @@ public class SecurityConfiguration {
                 .authorizationGrantTypes(t -> t.addAll(e.getValue().getAuthorizationGrantTypes()))
                 .redirectUris(r -> r.addAll(e.getValue().getRedirectUris()))
                 .scopes(s -> s.addAll(e.getValue().getScopes()))
+                .clientSettings(ClientSettings.builder().settings(consumer(e.getValue().getClientConfiguration())).build())
+                .tokenSettings(TokenSettings.builder().settings(consumer(e.getValue().getTokenConfiguration())).build())
                 .build()
         ).toList();
         registeredClients.forEach(client -> log.debug("Registering OIDC client: {}", client));
@@ -123,9 +129,18 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public AuthorizationServerSettings authorizationServerSettings() {
+    public AuthorizationServerSettings authorizationServerSettings(SecurityProperties properties) {
         return AuthorizationServerSettings.builder()
+            .settings(consumer(properties.getServerConfiguration()))
             .build();
+    }
+
+    private static Consumer<Map<String, Object>> consumer(Map<String, Object> settings) {
+        return stringObjectMap -> {
+            if (settings != null) {
+                stringObjectMap.putAll(settings);
+            }
+        };
     }
 
 }

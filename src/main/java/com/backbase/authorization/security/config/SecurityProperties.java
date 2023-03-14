@@ -17,6 +17,8 @@ public class SecurityProperties {
 
     private String[] publicPaths = new String[0];
 
+    private Map<String, Object> serverConfiguration;
+
     @NotEmpty
     private Map<String, OidcClient> clientRegistration;
 
@@ -28,6 +30,8 @@ public class SecurityProperties {
         private Set<AuthorizationGrantType> authorizationGrantTypes;
         private Set<String> redirectUris;
         private Set<String> scopes;
+        private Map<String, Object> clientConfiguration;
+        private Map<String, Object> tokenConfiguration;
         private Set<ClaimMapper> claimMappers = new HashSet<>();
 
     }

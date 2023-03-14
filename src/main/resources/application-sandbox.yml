@@ -27,6 +27,9 @@ mastercard:
 
 security:
   authorization:
+    server-configuration:
+      "[settings.authorization-server.jwk-set-endpoint]": /protocol/openid-connect/certs
+      "[settings.authorization-server.oidc-user-info-endpoint]": /protocol/openid-connect/userinfo
     public-paths:
       - /actuator/**
     client-registration:
