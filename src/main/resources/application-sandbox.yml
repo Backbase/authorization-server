@@ -20,7 +20,7 @@ mastercard:
         base-uri: https://developer.mastercard.com/apigwproxy/openbanking/connect/api
       aspsps:
         - id: 420e5cff-0e2a-4156-991a-f6eeef0478cf
-          consents:
+          available-consents:
             - user:
                 username: sara
                 roles: USER

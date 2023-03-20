@@ -1,6 +1,9 @@
 package com.backbase.authorization.ais.config;
 
 import com.backbase.authorization.ais.model.AiConsentUser;
+import com.mastercard.mcob.ais.model.PostAccountsConsentsParamsBody.PermissionsEnum;
+import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.validation.constraints.NotEmpty;
@@ -32,8 +35,12 @@ public class AiConsentsProperties {
         @NotNull
         private String id;
 
+        private List<PermissionsEnum> permissions = List.of(PermissionsEnum.ALLPSD2);
+
+        private Duration consentValidity = Duration.ofMinutes(15);
+
         @NotEmpty
-        private Set<Consent> consents;
+        private Set<Consent> availableConsents;
     }
 
     @Data

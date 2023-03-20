@@ -16,8 +16,8 @@ public class AiConsentUsersRepository {
         Aspsp aspsp = properties.getAspsps().stream().filter(a -> aspspId.equals(a.getId())).findFirst()
             .orElse(properties.getDefaultAspsp());
 
-        return aspsp.getConsents().stream().filter(c -> consentId.equals(c.getId())).findFirst()
-            .orElse(aspsp.getConsents().stream().findFirst().orElseThrow()).getUser();
+        return aspsp.getAvailableConsents().stream().filter(c -> consentId.equals(c.getId())).findFirst()
+            .orElse(aspsp.getAvailableConsents().stream().findFirst().orElseThrow()).getUser();
     }
 
 }
