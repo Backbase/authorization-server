@@ -50,11 +50,11 @@ public class SecurityConfiguration {
         throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-            .oidc((oidc) -> oidc.userInfoEndpoint(
-                (configurer) -> configurer.userInfoMapper(attributesClaimsMapper))) // Enable OpenID Connect 1.0
+            // Enable OpenID Connect 1.0
+            .oidc(oidc -> oidc.userInfoEndpoint(configurer -> configurer.userInfoMapper(attributesClaimsMapper)))
             .and()
-            .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()));
-        http
+            // Enable CORS headers
+            .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
             // Redirect to the login page when not authenticated from the authorization endpoint
             .exceptionHandling((exceptions) -> exceptions.authenticationEntryPoint(entryPoint))
             // Accept access tokens for AiConsentUser Info and/or Client Registration
