@@ -14,6 +14,7 @@
   "response": {
     "status": 200,
     "bodyFileName": "body-apigwproxy-openbanking-connect-api-accounts-consents-JFoR6.json",
+    "transformers": ["response-template"],
     "headers": {
       "Date": "Tue, 21 Mar 2023 15:31:09 GMT",
       "Content-Type": "application/json",

@@ -6,14 +6,13 @@ import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -22,7 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@AutoConfigureWireMock(port = 9999)
+@AutoConfigureWireMock(port = 0)
 class AuthServerApplicationTests {
 
     private static final String REDIRECT_URI = "http://127.0.0.1:8080/login/oauth2/code/test-client-oidc";
@@ -39,11 +38,18 @@ class AuthServerApplicationTests {
     @Autowired
     private WebClient webClient;
 
+    @Value("${wiremock.server.port}")
+    private Integer wiremockPort;
+
+    private String externalLoginUrl;
+
     @BeforeEach
     public void setUp() {
         this.webClient.getOptions().setThrowExceptionOnFailingStatusCode(true);
         this.webClient.getOptions().setRedirectEnabled(true);
         this.webClient.getCookieManager().clearCookies(); // log out
+
+        this.externalLoginUrl = String.format("http://127.0.0.1:%d/external-login", wiremockPort);
     }
 
     @Test
@@ -60,19 +66,18 @@ class AuthServerApplicationTests {
     }
 
     @Test
-    @Disabled
-    public void whenLoginFailsThenDisplayBadCredentials() throws IOException {
+    public void whenLoginFailsThenReturnUnauthorized() throws IOException {
         HtmlPage page = this.webClient.getPage("/");
 
-        HtmlPage loginErrorPage = signIn(page, "UKaccountEsbGdTB2a9MbSdt53serRsv0aUK001", "wrong-state");
+        this.webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        WebResponse response = signIn(page, "UKaccountEsbGdTB2a9MbSdt53serRsv0aUK001",
+            "wrong-value").getWebResponse();
 
-        HtmlElement alert = loginErrorPage.querySelector("div[role=\"alert\"]");
-        assertThat(alert).isNotNull();
-        assertThat(alert.getTextContent()).isEqualTo("Bad credentials");
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
     @Test
-    public void whenNotLoggedInAndRequestingTokenThenRedirectsToLogin() throws IOException {
+    public void whenNotLoggedInAndRequestingTokenThenRedirectsToExternalLogin() throws IOException {
         HtmlPage page = this.webClient.getPage(AUTHORIZATION_REQUEST);
 
         assertExternalLoginPage(page);
@@ -88,7 +93,8 @@ class AuthServerApplicationTests {
         // Log in
         this.webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
         this.webClient.getOptions().setRedirectEnabled(false);
-        signIn(this.webClient.getPage("http://127.0.0.1:9999/external-login"), "UKaccountEsbGdTB2a9MbSdt53serRsv0aUK001",
+        signIn(this.webClient.getPage(externalLoginUrl),
+            "UKaccountEsbGdTB2a9MbSdt53serRsv0aUK001",
             "3713ac23-9600-418f-842a-3df01e93cd4d");
 
         // Request token
@@ -110,8 +116,8 @@ class AuthServerApplicationTests {
         return signInButton.click();
     }
 
-    private static void assertExternalLoginPage(HtmlPage page) {
-        assertThat(page.getUrl().toString()).startsWith("http://127.0.0.1:9999/external-login");
+    private void assertExternalLoginPage(HtmlPage page) {
+        assertThat(page.getUrl().toString()).startsWith(externalLoginUrl);
 
         HtmlInput codeInput = page.querySelector("input[name=\"code\"]");
         HtmlInput stateInput = page.querySelector("input[name=\"state\"]");

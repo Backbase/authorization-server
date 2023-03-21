@@ -1,5 +1,6 @@
 package com.backbase.authorization.ais.authentication;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -15,21 +16,39 @@ public class AiConsentAuthenticationConfigurer extends
 
     public static final String CALLBACK_URL = "/callback";
 
-    private final AiConsentCallbackFilter authFilter;
-    private final AiConsentRedirectEntryPoint authenticationEntryPoint;
+    private AiConsentCallbackFilter authFilter;
+    private AiConsentRedirectEntryPoint authenticationEntryPoint;
 
+    public AiConsentAuthenticationConfigurer() {
+        authFilter(new AiConsentCallbackFilter(CALLBACK_URL));
+    }
+
+    @Autowired
     public AiConsentAuthenticationConfigurer(AiConsentRedirectEntryPoint authenticationEntryPoint) {
-        this.authFilter = new AiConsentCallbackFilter(CALLBACK_URL);
+        this();
+        authenticationEntryPoint(authenticationEntryPoint);
+    }
+
+    public AiConsentAuthenticationConfigurer authFilter(AiConsentCallbackFilter authFilter) {
+        this.authFilter = authFilter;
+        return this;
+    }
+
+    public AiConsentAuthenticationConfigurer authenticationEntryPoint(
+        AiConsentRedirectEntryPoint authenticationEntryPoint) {
         this.authenticationEntryPoint = authenticationEntryPoint;
+        return this;
     }
 
     @Override
     public void init(HttpSecurity builder) throws Exception {
-        ExceptionHandlingConfigurer exceptionHandling = builder.getConfigurer(ExceptionHandlingConfigurer.class);
-        if (exceptionHandling == null) {
-            return;
+        if (this.authenticationEntryPoint != null) {
+            ExceptionHandlingConfigurer exceptionHandling = builder.getConfigurer(ExceptionHandlingConfigurer.class);
+            if (exceptionHandling == null) {
+                return;
+            }
+            exceptionHandling.authenticationEntryPoint(postProcess(authenticationEntryPoint));
         }
-        exceptionHandling.authenticationEntryPoint(postProcess(authenticationEntryPoint));
         super.init(builder);
     }
 

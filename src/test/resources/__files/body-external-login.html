@@ -2,28 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
   <title>Please sign in</title>
-<!--  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet"-->
-<!--        integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">-->
-<!--  <link href="https://getbootstrap.com/docs/4.0/examples/signin/signin.css" rel="stylesheet" crossorigin="anonymous"/>-->
 </head>
 <body>
-<div class="container">
-  <form class="form-signin" method="get" action="http://localhost:8080/callback">
-    <h2 class="form-signin-heading">Please sign in</h2>
+<div>
+  <form method="get" action="http://localhost:8080/callback">
+    <h2>Please sign in</h2>
     <input type="hidden" name="aspspId" value="420e5cff-0e2a-4156-991a-f6eeef0478cf">
     <p>
-      <label for="code" class="sr-only">Username</label>
-      <input type="text" id="code" name="code" class="form-control" placeholder="Code" required autofocus>
+      <label for="code">Username</label>
+      <input type="text" id="code" name="code" placeholder="Code" required autofocus>
     </p>
     <p>
-      <label for="state" class="sr-only">Password</label>
-      <input type="password" id="state" name="state" class="form-control" placeholder="State" required>
+      <label for="state">Password</label>
+      <input type="password" id="state" name="state" placeholder="State" required>
     </p>
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    <button type="submit">Sign in</button>
   </form>
 </div>
 </body>

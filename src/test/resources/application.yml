@@ -7,7 +7,7 @@ mastercard:
   mcob:
     ais:
       api:
-        base-uri: http://localhost:${wiremock.server.port}/apigwproxy/openbanking/connect/api
+        base-uri: http://127.0.0.1:${wiremock.server.port}/apigwproxy/openbanking/connect/api
       aspsps:
         - id: 420e5cff-0e2a-4156-991a-f6eeef0478cf
           available-consents:

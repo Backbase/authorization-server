@@ -11,7 +11,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
@@ -39,7 +39,8 @@ public class AiConsentAuthenticationProvider implements AuthenticationProvider {
                 consentToken.getAspspId(), authorization.getConsentId());
             return new AiConsentAuthenticationToken(consentToken.getAspspId(), authorization.getConsentId(), user);
         } catch (ApiException e) {
-            throw new BadCredentialsException(e.getMessage(), e);
+            log.error("Failed when fetching authorizations: {}", e.getMessage());
+            throw new AuthenticationServiceException(e.getMessage(), e);
         }
     }
 
