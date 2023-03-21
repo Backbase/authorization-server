@@ -1,0 +1,10 @@
+{
+  "request": {
+    "url": "/external-login",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "body-external-login.html"
+  }
+}

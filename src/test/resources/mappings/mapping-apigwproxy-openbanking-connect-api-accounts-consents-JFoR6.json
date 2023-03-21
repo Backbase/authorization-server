@@ -1,0 +1,58 @@
+{
+  "id": "2e619dcb-0675-3cbd-9861-7f96b5af3449",
+  "request": {
+    "url": "/apigwproxy/openbanking/connect/api/accounts/consents",
+    "method": "POST",
+    "bodyPatterns": [
+      {
+        "equalToJson": "{\"requestInfo\":{\"tppRedirectURI\":\"http://localhost:8080/callback?aspspId=420e5cff-0e2a-4156-991a-f6eeef0478cf\",\"aspspId\":\"420e5cff-0e2a-4156-991a-f6eeef0478cf\"},\"permissions\":[\"allPSD2\"]}",
+        "ignoreArrayOrder": true,
+        "ignoreExtraElements": true
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "body-apigwproxy-openbanking-connect-api-accounts-consents-JFoR6.json",
+    "headers": {
+      "Date": "Tue, 21 Mar 2023 15:31:09 GMT",
+      "Content-Type": "application/json",
+      "Vary": "Accept-Encoding",
+      "Cache-Control": "no-cache,no-store,max-age=0",
+      "Correlation-Id": "9865e8dc-04b2-43fc-b7bc-ba9386b1cbae",
+      "Pragma": "no-cache",
+      "Strict-Transport-Security": [
+        "max-age=31536000 ; includeSubDomains",
+        "max-age=15768000;",
+        "max-age=15768000;"
+      ],
+      "X-B3-Spanid": "42133de41f59ae5d",
+      "X-B3-Traceid": "7fdb7e4c6b3b017142133de41f59ae5d",
+      "X-Content-Type-Options": [
+        "nosniff",
+        "nosniff"
+      ],
+      "X-Edgeconnect-Midmile-Rtt": "108",
+      "X-Edgeconnect-Origin-Mex-Latency": "1150",
+      "X-Frame-Options": [
+        "DENY",
+        "SAMEORIGIN"
+      ],
+      "X-Mc-Correlation-Id": "0.d01c2117.1679412667.99c55e",
+      "X-Vcap-Request-Id": "2f7cdd05-0fb2-4b06-70a7-689aad0aca79",
+      "X-Xss-Protection": [
+        "1; mode=block",
+        "1; mode=block",
+        "1; mode=block"
+      ],
+      "Set-Cookie": [
+        "x-mc-web-ss=stl;  Path=/; HttpOnly; Secure",
+        "x-mc-web-ss=stl;  Path=/; HttpOnly; Secure",
+        "LBSESSION2=!nEkUrSTrUxQbvTxAJk2OxzqGlY/xal5Fj6MJv3ImMJ18cpJwnwocGHAERwVl/MYCEkNNRzc0LIK1wA==; expires=Tue, 21-Mar-2023 16:01:09 GMT; path=/; Httponly; Secure",
+        "TS01cc8956=01772feb4b5a634babf4029b8fa4757d5b1bf126a3166d24fc3a657379538a6c5b85c9459b5269404979ada6b8cb63e90ea703a5f9; Path=/; Secure; HTTPOnly",
+        "ILB=!67Dp9N/jm7tX1fGjuDabzbQPocOA6yemtNLqoufIjOhEAYAbAQb+0HtluqRnc+bcwi3RXj/hr6mIXmE=; expires=Tue, 21-Mar-2023 16:01:09 GMT; path=/; Httponly; Secure"
+      ]
+    }
+  },
+  "uuid": "2e619dcb-0675-3cbd-9861-7f96b5af3449"
+}

@@ -6,6 +6,8 @@ logging:
 mastercard:
   mcob:
     ais:
+      api:
+        base-uri: http://localhost:${wiremock.server.port}/apigwproxy/openbanking/connect/api
       aspsps:
         - id: 420e5cff-0e2a-4156-991a-f6eeef0478cf
           available-consents:
@@ -17,12 +19,11 @@ security:
   authorization:
     client-registration:
       test-client:
-        secret: "{noop}test-secret"
         client-authentication-methods:
-          - client_secret_basic
+          - none
         authorization-grant-types:
-          - client_credentials
+          - authorization_code
         redirect-uris:
-          - "*"
+          - http://127.0.0.1:8080/login/oauth2/code/test-client-oidc
         scopes:
           - openid

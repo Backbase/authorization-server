@@ -34,19 +34,19 @@ public class AiConsentAuthenticationConfigurer extends
     }
 
     @Override
-    public void configure(HttpSecurity http) throws Exception {
-        this.authFilter.setAuthenticationManager(http.getSharedObject(AuthenticationManager.class));
-        SessionAuthenticationStrategy sessionAuthenticationStrategy = http.getSharedObject(
+    public void configure(HttpSecurity builder) throws Exception {
+        this.authFilter.setAuthenticationManager(builder.getSharedObject(AuthenticationManager.class));
+        SessionAuthenticationStrategy sessionAuthenticationStrategy = builder.getSharedObject(
             SessionAuthenticationStrategy.class);
         if (sessionAuthenticationStrategy != null) {
             this.authFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
         }
-        RememberMeServices rememberMeServices = http.getSharedObject(RememberMeServices.class);
+        RememberMeServices rememberMeServices = builder.getSharedObject(RememberMeServices.class);
         if (rememberMeServices != null) {
             this.authFilter.setRememberMeServices(rememberMeServices);
         }
         AiConsentCallbackFilter filter = postProcess(this.authFilter);
-        http.addFilterAt(filter, UsernamePasswordAuthenticationFilter.class);
-        super.configure(http);
+        builder.addFilterAt(filter, UsernamePasswordAuthenticationFilter.class);
+        super.configure(builder);
     }
 }

@@ -1,0 +1,10 @@
+{
+  "originalRequestInfo": {
+    "xRequestId": "a9d37006-f9c3-4682-bf9a-c2c2f0b48f26"
+  },
+  "aspspSCAApproach": "REDIRECT",
+  "consentRequestId": "12345",
+  "_links": {
+    "scaRedirect": "http://127.0.0.1:9999/external-login"
+  }
+}
