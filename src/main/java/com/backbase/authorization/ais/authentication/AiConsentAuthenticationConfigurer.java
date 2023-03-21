@@ -1,30 +1,52 @@
 package com.backbase.authorization.ais.authentication;
 
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AiConsentAuthenticationConfigurer extends
-    AbstractAuthenticationFilterConfigurer<HttpSecurity, AiConsentAuthenticationConfigurer, AiConsentCallbackFilter> {
+    AbstractHttpConfigurer<AiConsentAuthenticationConfigurer, HttpSecurity> {
 
     public static final String CALLBACK_URL = "/callback";
 
-    public AiConsentAuthenticationConfigurer() {
-        super(new AiConsentCallbackFilter(CALLBACK_URL), CALLBACK_URL);
+    private final AiConsentCallbackFilter authFilter;
+    private final AiConsentRedirectEntryPoint authenticationEntryPoint;
+
+    public AiConsentAuthenticationConfigurer(AiConsentRedirectEntryPoint authenticationEntryPoint) {
+        this.authFilter = new AiConsentCallbackFilter(CALLBACK_URL);
+        this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
     @Override
-    protected RequestMatcher createLoginProcessingUrlMatcher(String loginProcessingUrl) {
-        return new AntPathRequestMatcher(loginProcessingUrl);
+    public void init(HttpSecurity builder) throws Exception {
+        ExceptionHandlingConfigurer exceptionHandling = builder.getConfigurer(ExceptionHandlingConfigurer.class);
+        if (exceptionHandling == null) {
+            return;
+        }
+        exceptionHandling.authenticationEntryPoint(postProcess(authenticationEntryPoint));
+        super.init(builder);
     }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.addFilterAt(super.getAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        this.authFilter.setAuthenticationManager(http.getSharedObject(AuthenticationManager.class));
+        SessionAuthenticationStrategy sessionAuthenticationStrategy = http.getSharedObject(
+            SessionAuthenticationStrategy.class);
+        if (sessionAuthenticationStrategy != null) {
+            this.authFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
+        }
+        RememberMeServices rememberMeServices = http.getSharedObject(RememberMeServices.class);
+        if (rememberMeServices != null) {
+            this.authFilter.setRememberMeServices(rememberMeServices);
+        }
+        AiConsentCallbackFilter filter = postProcess(this.authFilter);
+        http.addFilterAt(filter, UsernamePasswordAuthenticationFilter.class);
         super.configure(http);
     }
 }

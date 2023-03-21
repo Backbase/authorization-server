@@ -56,7 +56,7 @@ public class SecurityConfiguration {
             // Enable CORS headers
             .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
             // Redirect to the login page when not authenticated from the authorization endpoint
-            .exceptionHandling((exceptions) -> exceptions.authenticationEntryPoint(entryPoint))
+            .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(entryPoint))
             // Accept access tokens for AiConsentUser Info and/or Client Registration
             .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
         return http.build();
