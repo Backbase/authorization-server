@@ -109,9 +109,9 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>com.backbase.oss</groupId>
-                <artifactId>boat-maven-plugin</artifactId>
-                <version>0.17.0</version>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>6.4.0</version>
                 <executions>
                     <execution>
                         <id>generate-open-banking-connect-ai-apis</id>
