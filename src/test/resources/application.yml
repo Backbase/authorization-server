@@ -3,6 +3,10 @@ logging:
     com.backbase.authorization: TRACE
     org.springframework.security: TRACE
 
+management:
+  endpoints:
+    enabled-by-default: true
+
 mastercard:
   mcob:
     ais:
@@ -24,6 +28,11 @@ security:
         authorization-grant-types:
           - authorization_code
         redirect-uris:
-          - http://127.0.0.1:8080/login/oauth2/code/test-client-oidc
+          - http://127.0.0.1:${wiremock.server.port}/test-client-redirect
         scopes:
           - openid
+        claim-mappers:
+          - attributeName: aspspId
+            toAccessToken: true
+          - attributeName: preferred_username
+            toIdToken: true

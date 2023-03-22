@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Token Request</title>
+</head>
+<body>
+<div>
+  <form method="post" action="http://localhost:8080/oauth2/token">
+    <h2>Please sign in</h2>
+    <input type="hidden" name="grant_type" id="grant_type" value="authorization_code"/>
+    <input type="hidden" name="client_id" id="client_id" value="test-client"/>
+    <input type="hidden" name="code_verifier" value="TndYQ3RPeVpOMG96R09vRDl5OU5vZ0RjSnZ6TUdNMTl1WG41Sn5pVFozaThQ"/>
+    <input type="hidden" name="code" id="code"/>
+    <input type="hidden" name="redirect_uri" id="redirect_uri"/>
+    <button type="submit">Submit</button>
+  </form>
+  <script>
+    const redirectUri = window.location.origin + window.location.pathname;
+    const code = new URLSearchParams(window.location.search).get('code');
+
+    document.getElementById('code').value = code;
+    document.getElementById('redirect_uri').value = redirectUri;
+  </script>
+</div>
+</body>
+</html>

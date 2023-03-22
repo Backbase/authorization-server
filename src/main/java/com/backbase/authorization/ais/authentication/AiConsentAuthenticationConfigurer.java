@@ -5,7 +5,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
-import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.stereotype.Component;
@@ -14,13 +13,14 @@ import org.springframework.stereotype.Component;
 public class AiConsentAuthenticationConfigurer extends
     AbstractHttpConfigurer<AiConsentAuthenticationConfigurer, HttpSecurity> {
 
-    public static final String CALLBACK_URL = "/callback";
+    public static final String DEFAULT_CALLBACK_URL = "/callback";
 
     private AiConsentCallbackFilter authFilter;
-    private AiConsentRedirectEntryPoint authenticationEntryPoint;
+    private AiConsentRedirectEntryPoint authenticationEntryPoint = new AiConsentRedirectEntryPoint();
+    private String callbackUrl;
 
     public AiConsentAuthenticationConfigurer() {
-        authFilter(new AiConsentCallbackFilter(CALLBACK_URL));
+        authFilter(new AiConsentCallbackFilter(DEFAULT_CALLBACK_URL));
     }
 
     @Autowired
@@ -40,15 +40,22 @@ public class AiConsentAuthenticationConfigurer extends
         return this;
     }
 
+    public AiConsentAuthenticationConfigurer callbackUrl(String callbackUrl) {
+        this.callbackUrl = callbackUrl;
+        return this;
+    }
+
     @Override
     public void init(HttpSecurity builder) throws Exception {
-        if (this.authenticationEntryPoint != null) {
-            ExceptionHandlingConfigurer exceptionHandling = builder.getConfigurer(ExceptionHandlingConfigurer.class);
-            if (exceptionHandling == null) {
-                return;
-            }
-            exceptionHandling.authenticationEntryPoint(postProcess(authenticationEntryPoint));
+        if (callbackUrl != null) {
+            authFilter.setFilterProcessesUrl(callbackUrl);
+            authenticationEntryPoint.setCallbackPath(callbackUrl);
         }
+        ExceptionHandlingConfigurer exceptionHandling = builder.getConfigurer(ExceptionHandlingConfigurer.class);
+        if (exceptionHandling == null) {
+            return;
+        }
+        exceptionHandling.authenticationEntryPoint(postProcess(authenticationEntryPoint));
         super.init(builder);
     }
 
@@ -59,10 +66,6 @@ public class AiConsentAuthenticationConfigurer extends
             SessionAuthenticationStrategy.class);
         if (sessionAuthenticationStrategy != null) {
             this.authFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
-        }
-        RememberMeServices rememberMeServices = builder.getSharedObject(RememberMeServices.class);
-        if (rememberMeServices != null) {
-            this.authFilter.setRememberMeServices(rememberMeServices);
         }
         AiConsentCallbackFilter filter = postProcess(this.authFilter);
         builder.addFilterAt(filter, UsernamePasswordAuthenticationFilter.class);

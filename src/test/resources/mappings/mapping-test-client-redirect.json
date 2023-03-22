@@ -1,0 +1,10 @@
+{
+  "request": {
+    "urlPath": "/test-client-redirect",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "body-test-client-redirect.html"
+  }
+}
