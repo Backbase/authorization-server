@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
 import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationContext;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
@@ -35,7 +36,7 @@ public class AttributesClaimsMapper implements OAuth2TokenCustomizer<JwtEncoding
     public void customize(JwtEncodingContext context) {
         if (context.getPrincipal() instanceof AttributesAuthenticationToken authenticationToken) {
             Map<String, Object> attributes = authenticationToken.getAttributes();
-            getAttributeClaims(context.getRegisteredClient().getClientId())
+            getAttributeClaims(context.getRegisteredClient())
                 .forEach(
                     mapper -> {
                         if (context.getTokenType().getValue().equals(OidcParameterNames.ID_TOKEN)
@@ -93,8 +94,11 @@ public class AttributesClaimsMapper implements OAuth2TokenCustomizer<JwtEncoding
     }
 
     private List<AttributeClaim> getAttributeClaims(String clientId) {
-        Map attributeClaims = registeredClientRepository.findByClientId(clientId)
-            .getTokenSettings()
+        return getAttributeClaims(registeredClientRepository.findByClientId(clientId));
+    }
+
+    private List<AttributeClaim> getAttributeClaims(RegisteredClient registeredClient) {
+        Map attributeClaims = registeredClient.getTokenSettings()
             .getSetting(SETTINGS_TOKEN_CLAIM_MAPPERS);
         return attributeClaims.values()
             .stream()
