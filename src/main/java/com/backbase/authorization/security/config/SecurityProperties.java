@@ -1,6 +1,6 @@
 package com.backbase.authorization.security.config;
 
-import java.util.HashSet;
+import com.backbase.authorization.validator.AllowedRedirectUris;
 import java.util.Map;
 import java.util.Set;
 import javax.validation.constraints.NotEmpty;
@@ -28,21 +28,11 @@ public class SecurityProperties {
         private String secret;
         private Set<ClientAuthenticationMethod> clientAuthenticationMethods;
         private Set<AuthorizationGrantType> authorizationGrantTypes;
+        @AllowedRedirectUris
         private Set<String> redirectUris;
         private Set<String> scopes;
         private Map<String, Object> clientConfiguration;
         private Map<String, Object> tokenConfiguration;
-        private Set<ClaimMapper> claimMappers = new HashSet<>();
-
-    }
-
-    @Data
-    public static class ClaimMapper {
-
-        private String attributeName;
-        private Boolean toUserInfo = true;
-        private Boolean toAccessToken = false;
-        private Boolean toIdToken = false;
 
     }
 

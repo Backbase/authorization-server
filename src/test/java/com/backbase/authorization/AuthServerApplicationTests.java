@@ -1,7 +1,10 @@
 package com.backbase.authorization;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
+import com.backbase.authorization.validator.AllowedRedirectUriValidator;
+import com.backbase.authorization.validator.AllowedRedirectUriValidator.RedirectTarget;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -17,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -38,6 +42,9 @@ class AuthServerApplicationTests {
 
     @Value("${wiremock.server.port}")
     private Integer wiremockPort;
+
+    @SpyBean
+    private AllowedRedirectUriValidator validator;
 
     private String externalLoginUrl;
     private String redirectUri;
@@ -61,6 +68,8 @@ class AuthServerApplicationTests {
             .queryParam("code_challenge_method", "S256")
             .queryParam("redirect_uri", redirectUri)
             .toUriString();
+
+        when(validator.isValidHost("localhost", RedirectTarget.CALLBACK)).thenReturn(true);
     }
 
     @Test

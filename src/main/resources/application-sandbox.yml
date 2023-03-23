@@ -46,13 +46,14 @@ security:
         scopes:
           - openid
           - profile
-        claim-mappers:
-          - attributeName: aspspId
-            toAccessToken: true
-          - attributeName: consentId
-            toAccessToken: true
-          - attributeName: preferred_username
-            toIdToken: true
+        token-configuration:
+          "[settings.token.claim-mappers]":
+            - attributeName: aspspId
+              toAccessToken: true
+            - attributeName: consentId
+              toAccessToken: true
+            - attributeName: preferred_username
+              toIdToken: true
       web-client:
         client-authentication-methods:
           - none
@@ -64,10 +65,11 @@ security:
         scopes:
           - openid
           - profile
-        claim-mappers:
-          - attributeName: aspspId
-            toAccessToken: true
-          - attributeName: consentId
-            toAccessToken: true
-          - attributeName: preferred_username
-            toIdToken: true
+        token-configuration:
+          "[settings.token.claim-mappers]":
+            - attributeName: aspspId
+              toAccessToken: true
+            - attributeName: consentId
+              toAccessToken: true
+            - attributeName: preferred_username
+              toIdToken: true

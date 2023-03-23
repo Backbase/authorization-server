@@ -31,8 +31,9 @@ security:
           - http://127.0.0.1:${wiremock.server.port}/test-client-redirect
         scopes:
           - openid
-        claim-mappers:
-          - attributeName: aspspId
-            toAccessToken: true
-          - attributeName: preferred_username
-            toIdToken: true
+        token-configuration:
+          "[settings.token.claim-mappers]":
+            - attributeName: aspspId
+              toAccessToken: true
+            - attributeName: preferred_username
+              toIdToken: true
