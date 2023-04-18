@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class AttributesClaimsMapper implements OAuth2TokenCustomizer<JwtEncodingContext>,
+public class AttributeClaimMapper implements OAuth2TokenCustomizer<JwtEncodingContext>,
     Function<OidcUserInfoAuthenticationContext, OidcUserInfo> {
 
     public static final String SETTINGS_TOKEN_CLAIM_MAPPERS = "settings.token.claim-mappers";
@@ -36,7 +36,7 @@ public class AttributesClaimsMapper implements OAuth2TokenCustomizer<JwtEncoding
     public void customize(JwtEncodingContext context) {
         if (context.getPrincipal() instanceof AttributesAuthenticationToken authenticationToken) {
             Map<String, Object> attributes = authenticationToken.getAttributes();
-            getAttributeClaims(context.getRegisteredClient())
+            getAttributeClaimMappings(context.getRegisteredClient())
                 .forEach(
                     mapper -> {
                         if (context.getTokenType().getValue().equals(OidcParameterNames.ID_TOKEN)
@@ -73,8 +73,8 @@ public class AttributesClaimsMapper implements OAuth2TokenCustomizer<JwtEncoding
             Map<String, Object> jwtClaims = ((JwtAuthenticationToken) context.getAuthentication()
                 .getPrincipal())
                 .getTokenAttributes();
-            getAttributeClaims(request.getClientId()).stream()
-                .filter(AttributeClaim::getToUserInfo)
+            getAttributeClaimMappings(request.getClientId()).stream()
+                .filter(AttributeClaimMapping::getToUserInfo)
                 .forEach(
                     mapper -> {
                         if (idToken.getClaims().containsKey(mapper.getAttributeName())) {
@@ -93,16 +93,16 @@ public class AttributesClaimsMapper implements OAuth2TokenCustomizer<JwtEncoding
         return new OidcUserInfo(userInfoClaims);
     }
 
-    private List<AttributeClaim> getAttributeClaims(String clientId) {
-        return getAttributeClaims(registeredClientRepository.findByClientId(clientId));
+    private List<AttributeClaimMapping> getAttributeClaimMappings(String clientId) {
+        return getAttributeClaimMappings(registeredClientRepository.findByClientId(clientId));
     }
 
-    private List<AttributeClaim> getAttributeClaims(RegisteredClient registeredClient) {
+    private List<AttributeClaimMapping> getAttributeClaimMappings(RegisteredClient registeredClient) {
         Map attributeClaims = registeredClient.getTokenSettings()
             .getSetting(SETTINGS_TOKEN_CLAIM_MAPPERS);
         return attributeClaims.values()
             .stream()
-            .map(a -> mapper.convertValue(a, AttributeClaim.class))
+            .map(a -> mapper.convertValue(a, AttributeClaimMapping.class))
             .toList();
     }
 

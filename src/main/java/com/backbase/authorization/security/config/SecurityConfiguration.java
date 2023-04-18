@@ -4,7 +4,7 @@ package com.backbase.authorization.security.config;
 import com.backbase.authorization.ais.authentication.AiConsentAuthenticationConfigurer;
 import com.backbase.authorization.ais.authentication.AiConsentAuthenticationProvider;
 import com.backbase.authorization.ais.authentication.AiConsentRedirectEntryPoint;
-import com.backbase.authorization.security.token.AttributesClaimsMapper;
+import com.backbase.authorization.security.token.AttributeClaimMapper;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -46,18 +46,18 @@ public class SecurityConfiguration {
     @Bean
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http,
-        AiConsentRedirectEntryPoint entryPoint, AttributesClaimsMapper attributesClaimsMapper)
+        AiConsentRedirectEntryPoint entryPoint, AttributeClaimMapper attributeClaimMapper)
         throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
             // Enable OpenID Connect 1.0
-            .oidc(oidc -> oidc.userInfoEndpoint(configurer -> configurer.userInfoMapper(attributesClaimsMapper)))
+            .oidc(oidc -> oidc.userInfoEndpoint(configurer -> configurer.userInfoMapper(attributeClaimMapper)))
             .and()
             // Enable CORS headers
             .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
             // Redirect to the login page when not authenticated from the authorization endpoint
             .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(entryPoint))
-            // Accept access tokens for AiConsentUser Info and/or Client Registration
+            // Accept access tokens for User Info and/or Client Registration
             .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
         return http.build();
     }

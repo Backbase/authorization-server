@@ -3,7 +3,7 @@ package com.backbase.authorization.security.token;
 import lombok.Data;
 
 @Data
-public class AttributeClaim {
+public class AttributeClaimMapping {
 
     private String attributeName;
     private Boolean toUserInfo = true;
