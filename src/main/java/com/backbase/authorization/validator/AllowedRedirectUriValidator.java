@@ -19,8 +19,7 @@ public class AllowedRedirectUriValidator implements ConstraintValidator<AllowedR
         switch (target) {
             case CLIENT -> {
                 return !(ObjectUtils.isEmpty(host)
-                    || !permissiveRedirect
-                    || host.equals("localhost"));
+                    || (host.equals("localhost") && !permissiveRedirect));
             }
             case CALLBACK -> {
                 return !(ObjectUtils.isEmpty(host)
