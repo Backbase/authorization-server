@@ -32,6 +32,8 @@ security:
       "[settings.authorization-server.oidc-user-info-endpoint]": /protocol/openid-connect/userinfo
     public-paths:
       - /actuator/**
+    code-flow:
+      permissive-redirect: true
     client-registration:
       keycloak-broker-client:
         secret: "{noop}secret"
@@ -42,7 +44,7 @@ security:
           - authorization_code
           - refresh_token
         redirect-uris:
-          - http://host.docker.internal:8180/auth/realms/mastercard/broker/mastercard/endpoint
+          - http://localhost:8180/auth/realms/mastercard/broker/mastercard/endpoint
         scopes:
           - openid
           - profile

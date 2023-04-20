@@ -9,15 +9,8 @@ import com.mastercard.mcob.ais.api.AiConsentsApi;
 import com.mastercard.mcob.ais.model.PostAccountsConsentsOKBody;
 import com.mastercard.mcob.ais.model.PostAccountsConsentsParamsBody;
 import com.mastercard.mcob.ais.model.PostAccountsConsentsParamsBodyRequestInfo;
-import java.io.IOException;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -29,8 +22,17 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class AiConsentRedirectEntryPoint implements AuthenticationEntryPoint {
 
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
@@ -38,20 +40,6 @@ public class AiConsentRedirectEntryPoint implements AuthenticationEntryPoint {
     private final AiConsentsProperties properties;
     private final AllowedRedirectUriValidator allowedRedirectUriValidator;
     private String callbackPath = AiConsentAuthenticationConfigurer.DEFAULT_CALLBACK_URL;
-
-    public AiConsentRedirectEntryPoint() {
-        this.aiConsentsApi = new AiConsentsApi();
-        this.properties = new AiConsentsProperties();
-        this.allowedRedirectUriValidator = new AllowedRedirectUriValidator();
-    }
-
-    @Autowired
-    public AiConsentRedirectEntryPoint(AiConsentsApi aiConsentsApi, AiConsentsProperties properties,
-        AllowedRedirectUriValidator allowedRedirectUriValidator) {
-        this.aiConsentsApi = aiConsentsApi;
-        this.properties = properties;
-        this.allowedRedirectUriValidator = allowedRedirectUriValidator;
-    }
 
     public void setCallbackPath(String callbackPath) {
         this.callbackPath = callbackPath;

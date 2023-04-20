@@ -2,7 +2,6 @@ package com.backbase.authorization.security.config;
 
 
 import com.backbase.authorization.ais.authentication.AiConsentAuthenticationConfigurer;
-import com.backbase.authorization.ais.authentication.AiConsentAuthenticationProvider;
 import com.backbase.authorization.ais.authentication.AiConsentRedirectEntryPoint;
 import com.backbase.authorization.security.token.AttributeClaimMapper;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -11,14 +10,6 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +28,15 @@ import org.springframework.security.oauth2.server.authorization.settings.ClientS
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
+
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 @Slf4j
 @Configuration
@@ -65,14 +65,13 @@ public class SecurityConfiguration {
     @Bean
     @Order(2)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, SecurityProperties properties,
-        AiConsentAuthenticationConfigurer configurer, AiConsentAuthenticationProvider provider)
+        AiConsentAuthenticationConfigurer configurer)
         throws Exception {
         http
             .authorizeHttpRequests((authorize) -> authorize
                 .antMatchers(properties.getPublicPaths()).permitAll()
                 .anyRequest().authenticated()
             )
-            .authenticationProvider(provider)
             // Configuring the callback endpoint that handles the authenticated redirect from the consent authorization.
             .apply(configurer);
 

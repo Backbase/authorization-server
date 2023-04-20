@@ -8,15 +8,17 @@ import org.springframework.security.config.annotation.web.configurers.ExceptionH
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 @Component
 public class AiConsentAuthenticationConfigurer extends
-    AbstractHttpConfigurer<AiConsentAuthenticationConfigurer, HttpSecurity> {
+        AbstractHttpConfigurer<AiConsentAuthenticationConfigurer, HttpSecurity> {
 
     public static final String DEFAULT_CALLBACK_URL = "/callback";
 
     private AiConsentCallbackFilter authFilter;
-    private AiConsentRedirectEntryPoint authenticationEntryPoint = new AiConsentRedirectEntryPoint();
+    private AiConsentAuthenticationProvider authenticationProvider;
+    private AiConsentRedirectEntryPoint authenticationEntryPoint;
     private String callbackUrl;
 
     public AiConsentAuthenticationConfigurer() {
@@ -24,9 +26,11 @@ public class AiConsentAuthenticationConfigurer extends
     }
 
     @Autowired
-    public AiConsentAuthenticationConfigurer(AiConsentRedirectEntryPoint authenticationEntryPoint) {
+    public AiConsentAuthenticationConfigurer(AiConsentRedirectEntryPoint authenticationEntryPoint,
+                                             AiConsentAuthenticationProvider authenticationProvider) {
         this();
         authenticationEntryPoint(authenticationEntryPoint);
+        authenticationProvider(authenticationProvider);
     }
 
     public AiConsentAuthenticationConfigurer authFilter(AiConsentCallbackFilter authFilter) {
@@ -35,8 +39,14 @@ public class AiConsentAuthenticationConfigurer extends
     }
 
     public AiConsentAuthenticationConfigurer authenticationEntryPoint(
-        AiConsentRedirectEntryPoint authenticationEntryPoint) {
+            AiConsentRedirectEntryPoint authenticationEntryPoint) {
         this.authenticationEntryPoint = authenticationEntryPoint;
+        return this;
+    }
+
+    public AiConsentAuthenticationConfigurer authenticationProvider(
+            AiConsentAuthenticationProvider authenticationProvider) {
+        this.authenticationProvider = authenticationProvider;
         return this;
     }
 
@@ -47,6 +57,7 @@ public class AiConsentAuthenticationConfigurer extends
 
     @Override
     public void init(HttpSecurity builder) throws Exception {
+        Assert.notNull(this.authenticationEntryPoint, "AiConsentRedirectEntryPoint is not provided.");
         if (callbackUrl != null) {
             authFilter.setFilterProcessesUrl(callbackUrl);
             authenticationEntryPoint.setCallbackPath(callbackUrl);
@@ -61,14 +72,15 @@ public class AiConsentAuthenticationConfigurer extends
 
     @Override
     public void configure(HttpSecurity builder) throws Exception {
+        Assert.notNull(this.authenticationProvider, "AiConsentAuthenticationProvider is not provided.");
         this.authFilter.setAuthenticationManager(builder.getSharedObject(AuthenticationManager.class));
         SessionAuthenticationStrategy sessionAuthenticationStrategy = builder.getSharedObject(
-            SessionAuthenticationStrategy.class);
+                SessionAuthenticationStrategy.class);
         if (sessionAuthenticationStrategy != null) {
             this.authFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
         }
-        AiConsentCallbackFilter filter = postProcess(this.authFilter);
-        builder.addFilterAt(filter, UsernamePasswordAuthenticationFilter.class);
+        builder.authenticationProvider(postProcess(this.authenticationProvider));
+        builder.addFilterAt(postProcess(this.authFilter), UsernamePasswordAuthenticationFilter.class);
         super.configure(builder);
     }
 }

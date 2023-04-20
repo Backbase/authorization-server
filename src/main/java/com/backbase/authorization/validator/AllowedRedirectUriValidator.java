@@ -3,6 +3,8 @@ package com.backbase.authorization.validator;
 import java.util.Collection;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -10,10 +12,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Component
 public class AllowedRedirectUriValidator implements ConstraintValidator<AllowedRedirectUris, Collection<String>> {
 
+    @Value("${security.authorization.code-flow.permissive-redirect:false}")
+    private boolean permissiveRedirect;
+
     public boolean isValidHost(String host, RedirectTarget target) {
         switch (target) {
             case CLIENT -> {
                 return !(ObjectUtils.isEmpty(host)
+                    || !permissiveRedirect
                     || host.equals("localhost"));
             }
             case CALLBACK -> {
